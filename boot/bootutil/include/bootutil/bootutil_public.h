@@ -47,6 +47,14 @@
 extern "C" {
 #endif
 
+#ifndef ALIGN_UP
+#define ALIGN_UP(num, align)    (((num) + ((align) - 1)) & ~((align) - 1))
+#endif
+
+#ifndef ALIGN_DOWN
+#define ALIGN_DOWN(num, align)  ((num) & ~((align) - 1))
+#endif
+
 /** Attempt to boot the contents of the primary slot. */
 #define BOOT_SWAP_TYPE_NONE     1
 
@@ -75,13 +83,11 @@ extern "C" {
 
 #ifdef MCUBOOT_BOOT_MAX_ALIGN
 #define BOOT_MAX_ALIGN          MCUBOOT_BOOT_MAX_ALIGN
-#define BOOT_MAGIC_ALIGN_SIZE \
-    ((((BOOT_MAGIC_SZ - 1) / BOOT_MAX_ALIGN) + 1) * BOOT_MAX_ALIGN)
+#define BOOT_MAGIC_ALIGN_SIZE   ALIGN_UP(BOOT_MAGIC_SZ, BOOT_MAX_ALIGN)
 #else
 #define BOOT_MAX_ALIGN          8
 #define BOOT_MAGIC_ALIGN_SIZE   BOOT_MAGIC_SZ
 #endif
-
 
 #define BOOT_MAGIC_GOOD     1
 #define BOOT_MAGIC_BAD      2
@@ -96,8 +102,6 @@ extern "C" {
 #define BOOT_FLAG_BAD       2
 #define BOOT_FLAG_UNSET     3
 #define BOOT_FLAG_ANY       4  /* NOTE: control only, not dependent on sector */
-
-#define BOOT_MAGIC_SZ (sizeof boot_img_magic)
 
 #define BOOT_EFLASH      1
 #define BOOT_EFILE       2

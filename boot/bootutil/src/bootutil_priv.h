@@ -109,24 +109,28 @@ struct boot_status {
  *  |                 Encryption key 0 (16 octets) [*]              |
  *  |                                                               |
  *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  |  0xff padding as needed (BOOT_MAX_ALIGN - 16 EK0 octets) [*]  |
+ *  |                    0xff padding as needed                     |
+ *  |  (BOOT_MAX_ALIGN minus 16 octets from Encryption key 0) [*]   |
  *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *  |                 Encryption key 1 (16 octets) [*]              |
  *  |                                                               |
  *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  |  0xff padding as needed (BOOT_MAX_ALIGN - 16 EK1 octets) [*]  |
+ *  |                    0xff padding as needed                     |
+ *  |  (BOOT_MAX_ALIGN minus 16 octets from Encryption key 1) [*]   |
  *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *  |                      Swap size (4 octets)                     |
  *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  | 0xff padding as needed (BOOT_MAX_ALIGN - 4 Swap Size octets)  |
+ *  |                    0xff padding as needed                     |
+ *  |        (BOOT_MAX_ALIGN minus 4 octets from Swap size)         |
  *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  |   Swap info   |   0xff padding (BOOT_MAX_ALIGN - 1 octets)    |
+ *  |   Swap info   |  0xff padding (BOOT_MAX_ALIGN minus 1 octet)  |
  *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  |   Copy done   |   0xff padding (BOOT_MAX_ALIGN - 1 octets)    |
+ *  |   Copy done   |  0xff padding (BOOT_MAX_ALIGN minus 1 octet)  |
  *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  |   Image OK    |   0xff padding (BOOT_MAX_ALIGN - 1 octets)    |
+ *  |   Image OK    |  0xff padding (BOOT_MAX_ALIGN minus 1 octet)  |
  *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  |   0xff padding as needed (BOOT_MAX_ALIGN - 16 MAGIC octets)   |
+ *  |                    0xff padding as needed                     |
+ *  |         (BOOT_MAX_ALIGN minus 16 octets from MAGIC)           |
  *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *  |                       MAGIC (16 octets)                       |
  *  |                                                               |
