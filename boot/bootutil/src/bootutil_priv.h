@@ -142,6 +142,11 @@ struct boot_status {
 
 extern const uint32_t boot_img_magic[4];
 
+#define BOOT_MAGIC_ARR_SZ \
+    (sizeof(boot_img_magic) / sizeof(boot_img_magic[0]))
+
+_Static_assert(sizeof(boot_img_magic) == BOOT_MAGIC_SZ, "Invalid size for image magic");
+
 #ifdef MCUBOOT_IMAGE_NUMBER
 #define BOOT_IMAGE_NUMBER          MCUBOOT_IMAGE_NUMBER
 #else

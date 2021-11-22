@@ -46,11 +46,6 @@ BOOT_LOG_MODULE_DECLARE(mcuboot);
 /* Currently only used by imgmgr */
 int boot_current_slot;
 
-extern const uint32_t boot_img_magic[];
-
-#define BOOT_MAGIC_ARR_SZ \
-    (sizeof boot_img_magic / sizeof boot_img_magic[0])
-
 /**
  * @brief Determine if the data at two memory addresses is equal
  *

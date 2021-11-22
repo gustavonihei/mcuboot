@@ -51,6 +51,7 @@
 #endif
 
 #include "bootutil/boot_public_hooks.h"
+#include "bootutil_priv.h"
 
 #ifdef CONFIG_MCUBOOT
 BOOT_LOG_MODULE_DECLARE(mcuboot);
@@ -64,9 +65,6 @@ const uint32_t boot_img_magic[] = {
     0x0f505235,
     0x8079b62c,
 };
-
-#define BOOT_MAGIC_ARR_SZ \
-    (sizeof boot_img_magic / sizeof boot_img_magic[0])
 
 struct boot_swap_table {
     uint8_t magic_primary_slot;
