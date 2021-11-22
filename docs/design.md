@@ -396,16 +396,28 @@ image trailer. An image trailer has the following structure:
     |                 Encryption key 0 (16 octets) [*]              |
     |                                                               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                    0xff padding as needed                     |
+    |  (BOOT_MAX_ALIGN minus 16 octets from Encryption key 0) [*]   |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                 Encryption key 1 (16 octets) [*]              |
     |                                                               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                    0xff padding as needed                     |
+    |  (BOOT_MAX_ALIGN minus 16 octets from Encryption key 1) [*]   |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                      Swap size (4 octets)                     |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |   Swap info   |           0xff padding (7 octets)             |
+    |                    0xff padding as needed                     |
+    |        (BOOT_MAX_ALIGN minus 4 octets from Swap size)         |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |   Copy done   |           0xff padding (7 octets)             |
+    |   Swap info   |  0xff padding (BOOT_MAX_ALIGN minus 1 octet)  |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |   Image OK    |           0xff padding (7 octets)             |
+    |   Copy done   |  0xff padding (BOOT_MAX_ALIGN minus 1 octet)  |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |   Image OK    |  0xff padding (BOOT_MAX_ALIGN minus 1 octet)  |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                    0xff padding as needed                     |
+    |         (BOOT_MAX_ALIGN minus 16 octets from MAGIC)           |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                       MAGIC (16 octets)                       |
     |                                                               |
