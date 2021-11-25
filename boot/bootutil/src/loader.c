@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "bootutil/bootutil.h"
+#include "bootutil/bootutil_public.h"
 #include "bootutil/image.h"
 #include "bootutil_priv.h"
 #include "swap_priv.h"
@@ -77,6 +78,12 @@ static struct boot_loader_state boot_data;
 #define TARGET_STATIC static
 #else
 #define TARGET_STATIC
+#endif
+
+#if BOOT_MAX_ALIGN > 1024
+#define BUF_SZ BOOT_MAX_ALIGN
+#else
+#define BUF_SZ 1024
 #endif
 
 static int
@@ -944,7 +951,7 @@ boot_copy_region(struct boot_loader_state *state,
     uint8_t image_index;
 #endif
 
-    TARGET_STATIC uint8_t buf[1024] __attribute__((aligned(4)));
+    TARGET_STATIC uint8_t buf[BUF_SZ] __attribute__((aligned(4)));
 
 #if !defined(MCUBOOT_ENC_IMAGES)
     (void)state;

@@ -1796,12 +1796,13 @@ fn verify_trailer(flash: &SimMultiFlash, slot: &SlotInfo,
 
     failed |= match magic {
         Some(v) => {
-            if v == 1 && &copy[24..] != MAGIC {
+            let magic_off = (c::boot_max_align() * 3) + (c::boot_magic_sz() - MAGIC.len());
+            if v == 1 && &copy[magic_off..] != MAGIC {
                 warn!("\"magic\" mismatch at {:#x}", offset);
                 true
             } else if v == 3 {
                 let expected = [erased_val; 16];
-                if copy[24..] != expected {
+                if copy[magic_off..] != expected {
                     warn!("\"magic\" mismatch at {:#x}", offset);
                     true
                 } else {
@@ -1816,8 +1817,9 @@ fn verify_trailer(flash: &SimMultiFlash, slot: &SlotInfo,
 
     failed |= match image_ok {
         Some(v) => {
-            if (v == 1 && copy[16] != v) || (v == 3 && copy[16] != erased_val) {
-                warn!("\"image_ok\" mismatch at {:#x} v={} val={:#x}", offset, v, copy[8]);
+            let image_ok_off = c::boot_max_align() * 2;
+            if (v == 1 && copy[image_ok_off] != v) || (v == 3 && copy[image_ok_off] != erased_val) {
+                warn!("\"image_ok\" mismatch at {:#x} v={} val={:#x}", offset, v, copy[image_ok_off]);
                 true
             } else {
                 false
@@ -1828,8 +1830,9 @@ fn verify_trailer(flash: &SimMultiFlash, slot: &SlotInfo,
 
     failed |= match copy_done {
         Some(v) => {
-            if (v == 1 && copy[8] != v) || (v == 3 && copy[8] != erased_val) {
-                warn!("\"copy_done\" mismatch at {:#x} v={} val={:#x}", offset, v, copy[0]);
+            let copy_done_off = c::boot_max_align();
+            if (v == 1 && copy[copy_done_off] != v) || (v == 3 && copy[copy_done_off] != erased_val) {
+                warn!("\"copy_done\" mismatch at {:#x} v={} val={:#x}", offset, v, copy[copy_done_off]);
                 true
             } else {
                 false
@@ -1947,16 +1950,13 @@ pub fn mark_upgrade(flash: &mut SimMultiFlash, slot: &SlotInfo) {
     let dev = flash.get_mut(&slot.dev_id).unwrap();
     let align = dev.align();
     let offset = slot.trailer_off + c::boot_max_align() * 4;
-    if offset % align != 0 || MAGIC.len() % align != 0 {
-        // The write size is larger than the magic value.  Fill a buffer
-        // with the erased value, put the MAGIC in it, and write it in its
-        // entirety.
-        let mut buf = vec![dev.erased_val(); align];
-        buf[(offset % align)..].copy_from_slice(MAGIC);
-        dev.write(offset - (offset % align), &buf).unwrap();
-    } else {
-        dev.write(offset, MAGIC).unwrap();
-    }
+
+    // Fill a buffer with the erased value, put the MAGIC in it,
+    // and write it in its entirety.
+    let mut buf = vec![dev.erased_val(); c::boot_max_align()];
+    let magic_off = (offset % align) + (c::boot_magic_sz() - MAGIC.len());
+    buf[magic_off..].copy_from_slice(MAGIC);
+    dev.write(offset - (offset % align), &buf).unwrap();
 }
 
 /// Writes the image_ok flag which, guess what, tells the bootloader
@@ -1970,11 +1970,11 @@ fn mark_permanent_upgrade(flash: &mut SimMultiFlash, slot: &SlotInfo) {
     }
 
     let dev = flash.get_mut(&slot.dev_id).unwrap();
-    let mut ok = [dev.erased_val(); 8];
+    let align = dev.align();
+    let mut ok = vec![dev.erased_val(); align];
     ok[0] = 1u8;
     let off = slot.trailer_off + c::boot_max_align() * 3;
-    let align = dev.align();
-    dev.write(off, &ok[..align]).unwrap();
+    dev.write(off, &ok).unwrap();
 }
 
 // Drop some pseudo-random gibberish onto the data.
@@ -2011,18 +2011,12 @@ fn maximal(size: usize) -> ImageSize {
 
 pub fn show_sizes() {
     // This isn't panic safe.
-    for min in &[1, 2, 4, 8] {
+    for min in &[1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096] {
         let msize = c::boot_trailer_sz(*min);
         println!("{:2}: {} (0x{:x})", min, msize, msize);
     }
 }
 
-#[cfg(not(feature = "large-write"))]
 fn test_alignments() -> &'static [usize] {
-    &[1, 2, 4, 8]
-}
-
-#[cfg(feature = "large-write")]
-fn test_alignments() -> &'static [usize] {
-    &[1, 2, 4, 8, 128, 512]
+    &[1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
 }

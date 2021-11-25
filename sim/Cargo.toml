@@ -28,7 +28,6 @@ bootstrap = ["mcuboot-sys/bootstrap"]
 multiimage = ["mcuboot-sys/multiimage"]
 ram-load = ["mcuboot-sys/ram-load"]
 direct-xip = ["mcuboot-sys/direct-xip"]
-large-write = []
 downgrade-prevention = ["mcuboot-sys/downgrade-prevention"]
 
 [dependencies]
